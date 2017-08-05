@@ -56,55 +56,6 @@ class Resolver(object):
         self.ignore_requires_python = ignore_requires_python
         self.use_user_site = use_user_site
 
-    def resolve(self, requirement_set):
-        """Resolve what operations need to be done
-
-        As a side-effect of this method, the packages (and their dependencies)
-        are downloaded, unpacked and prepared for installation. This
-        preparation is done by ``pip.operations.prepare``.
-
-        Once PyPI has static dependency metadata available, it would be
-        possible to move the preparation to become a step separated from
-        dependency resolution.
-        """
-        # make the wheelhouse
-        if self.preparer.wheel_download_dir:
-            ensure_dir(self.preparer.wheel_download_dir)
-
-        # If any top-level requirement has a hash specified, enter
-        # hash-checking mode, which requires hashes from all.
-        root_reqs = (
-            requirement_set.unnamed_requirements +
-            requirement_set.requirements.values()
-        )
-        self.require_hashes = (
-            requirement_set.require_hashes or
-            any(req.has_hash_options for req in root_reqs)
-        )
-
-        # Display where finder is looking for packages
-        locations = self.finder.get_formatted_locations()
-        if locations:
-            logger.info(locations)
-
-        # Actually prepare the files, and collect any exceptions. Most hash
-        # exceptions cannot be checked ahead of time, because
-        # req.populate_link() needs to be called before we can make decisions
-        # based on link type.
-        discovered_reqs = []
-        hash_errors = HashErrors()
-        for req in chain(root_reqs, discovered_reqs):
-            try:
-                discovered_reqs.extend(
-                    self._resolve_one(requirement_set, req)
-                )
-            except HashError as exc:
-                exc.req = req
-                hash_errors.append(exc)
-
-        if hash_errors:
-            raise hash_errors
-
     def _is_upgrade_allowed(self, req):
         if self.upgrade_strategy == "to-satisfy-only":
             return False
@@ -303,3 +254,52 @@ class Resolver(object):
                 requirement_set.successfully_downloaded.append(req_to_install)
 
         return more_reqs
+
+    def resolve(self, requirement_set):
+        """Resolve what operations need to be done
+
+        As a side-effect of this method, the packages (and their dependencies)
+        are downloaded, unpacked and prepared for installation. This
+        preparation is done by ``pip.operations.prepare``.
+
+        Once PyPI has static dependency metadata available, it would be
+        possible to move the preparation to become a step separated from
+        dependency resolution.
+        """
+        # make the wheelhouse
+        if self.preparer.wheel_download_dir:
+            ensure_dir(self.preparer.wheel_download_dir)
+
+        # If any top-level requirement has a hash specified, enter
+        # hash-checking mode, which requires hashes from all.
+        root_reqs = (
+            requirement_set.unnamed_requirements +
+            requirement_set.requirements.values()
+        )
+        self.require_hashes = (
+            requirement_set.require_hashes or
+            any(req.has_hash_options for req in root_reqs)
+        )
+
+        # Display where finder is looking for packages
+        locations = self.finder.get_formatted_locations()
+        if locations:
+            logger.info(locations)
+
+        # Actually prepare the files, and collect any exceptions. Most hash
+        # exceptions cannot be checked ahead of time, because
+        # req.populate_link() needs to be called before we can make decisions
+        # based on link type.
+        discovered_reqs = []
+        hash_errors = HashErrors()
+        for req in chain(root_reqs, discovered_reqs):
+            try:
+                discovered_reqs.extend(
+                    self._resolve_one(requirement_set, req)
+                )
+            except HashError as exc:
+                exc.req = req
+                hash_errors.append(exc)
+
+        if hash_errors:
+            raise hash_errors
