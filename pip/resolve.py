@@ -157,7 +157,7 @@ class Resolver(object):
 
         # Check for the possibility of an upgrade.  For link-based
         # requirements we have to pull the tree down and inspect to assess
-        # the version #, so it's handled way down.
+        # the version, so it's handled way down.
         if not (self.force_reinstall or req_to_install.link):
             try:
                 self.finder.find_requirement(req_to_install, upgrade=True)
