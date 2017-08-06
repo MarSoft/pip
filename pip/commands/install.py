@@ -307,7 +307,8 @@ class InstallCommand(RequirementCommand):
                     )
                     reqs = sorted(
                         requirement_set.successfully_installed,
-                        key=operator.attrgetter('name'))
+                        key=operator.attrgetter('name')
+                    )
                     items = []
                     for req in reqs:
                         item = req.name
