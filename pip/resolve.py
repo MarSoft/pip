@@ -286,12 +286,16 @@ class Resolver(object):
         if locations:
             logger.info(locations)
 
-        # Actually prepare the files, and collect any exceptions. Most hash
-        # exceptions cannot be checked ahead of time, because
+        self._resolve_requirements(root_reqs, requirement_set)
+
+    def _resolve_requirements(self, root_reqs, requirement_set):
+        # Actually prepare the files and collect any exceptions.
+        hash_errors = HashErrors()
+
+        # Most hash exceptions cannot be checked ahead of time, because
         # req.populate_link() needs to be called before we can make decisions
         # based on link type.
         discovered_reqs = []
-        hash_errors = HashErrors()
         for req in chain(root_reqs, discovered_reqs):
             try:
                 discovered_reqs.extend(
