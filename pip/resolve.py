@@ -11,6 +11,7 @@ for sub-dependencies
 """
 
 import logging
+from collections import namedtuple
 from itertools import chain
 
 from pip.exceptions import (
@@ -23,6 +24,10 @@ from pip.utils.logging import indent_log
 from pip.utils.packaging import check_dist_requires_python
 
 logger = logging.getLogger(__name__)
+
+_resolver_internal = namedtuple(
+    "_resolver_internal", ["discovered", "downloaded", "need_cleanup"]
+)
 
 
 class Resolver(object):
@@ -92,18 +97,27 @@ class Resolver(object):
         # req.populate_link() needs to be called before we can make decisions
         # based on link type.
         discovered_reqs = []
+        downloaded_reqs = []
+        need_cleanup_reqs = []
+
         hash_errors = HashErrors()
         for req in chain(root_reqs, discovered_reqs):
             try:
-                discovered_reqs.extend(
-                    self._resolve_one(requirement_set, req)
-                )
+                step_results = self._resolve_one(requirement_set, req)
             except HashError as exc:
                 exc.req = req
                 hash_errors.append(exc)
+            else:
+                discovered_reqs.extend(step_results.discovered)
+                if step_results.downloaded:
+                    downloaded_reqs.append(req)
+                if step_results.need_cleanup:
+                    need_cleanup_reqs.append(req)
 
         if hash_errors:
             raise hash_errors
+
+        return discovered_reqs, downloaded_reqs, need_cleanup_reqs
 
     def _is_upgrade_allowed(self, req):
         if self.upgrade_strategy == "to-satisfy-only":
@@ -185,19 +199,23 @@ class Resolver(object):
     def _resolve_one(self, requirement_set, req_to_install):
         """Prepare a single requirements file.
 
-        :return: A list of additional InstallRequirements to also install.
+        :return: An internal object that describes what happened in this method
         """
+        more_reqs = []
+        have_downloaded = False
+        need_cleanup = False
+
         # Tell user what we are doing for this requirement:
         # obtain (editable), skipping, processing (local url), collecting
         # (remote url or package name)
         if req_to_install.constraint or req_to_install.prepared:
-            return []
+            return _resolver_internal(more_reqs, have_downloaded, need_cleanup)
 
         req_to_install.prepared = True
         abstract_dist = self.preparer.prepare_requirement(req_to_install, self)
 
-        # register tmp src for cleanup in case something goes wrong
-        requirement_set.reqs_to_cleanup.append(req_to_install)
+        # We prepared this requirement; it needs to be cleaned up.
+        need_cleanup = True
 
         # Parse and return dependencies
         dist = abstract_dist.dist(self.finder)
@@ -208,8 +226,6 @@ class Resolver(object):
                 logger.warning(err.args[0])
             else:
                 raise
-
-        more_reqs = []
 
         def add_req(subreq, extras_requested):
             sub_install_req = InstallRequirement.from_req(
@@ -253,10 +269,10 @@ class Resolver(object):
                 for subreq in dist.requires(available_requested):
                     add_req(subreq, extras_requested=available_requested)
 
-            if not req_to_install.editable and not req_to_install.satisfied_by:
-                # XXX: --no-install leads this to report 'Successfully
-                # downloaded' for only non-editable reqs, even though we took
-                # action on them.
-                requirement_set.successfully_downloaded.append(req_to_install)
+        if not req_to_install.editable and not req_to_install.satisfied_by:
+            # XXX: --no-install leads this to report 'Successfully
+            # downloaded' for only non-editable reqs, even though we took
+            # action on them.
+            have_downloaded = True
 
-        return more_reqs
+        return _resolver_internal(more_reqs, have_downloaded, need_cleanup)
