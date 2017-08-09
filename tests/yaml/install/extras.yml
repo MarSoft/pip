@@ -39,3 +39,15 @@ cases:
       - D 1.0.0
       - E 1.0.0
       - F 1.0.0
+-
+  request:
+    - install: D
+    - install:
+      - D[extra_2]
+      - D[extra_1]
+  transaction:
+    - install:
+      - D 1.0.0
+    - install:
+      - E 1.0.0
+      - F 1.0.0
