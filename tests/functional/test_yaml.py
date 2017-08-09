@@ -49,14 +49,16 @@ def _convert_to_dict(string):
     return retval
 
 
-def handle_install_request(script, requirement):
-    assert isinstance(requirement, str), (
-        "Need install requirement to be a string only"
-    )
+def handle_install_request(script, requirements):
+    if isinstance(requirements, str):
+        requirements = [requirements]
+
+    assert all(isinstance(req, str) for req in requirements)
+
     result = script.pip(
         "install",
         "--no-index", "--find-links", path_to_url(script.scratch_path),
-        requirement
+        *requirements
     )
 
     retval = {}
