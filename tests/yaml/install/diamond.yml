@@ -14,3 +14,20 @@ cases:
         selector: D == 1.0.0
       - required_by: [A 1.0.0, C 1.0.0]
         selector: D == 2.0.0
+# Diamond Dependencies, with a valid outcome.
+-
+  available:
+    - A 1.0.0; depends B == 1.0.0, C == 1.0.0
+    - B 1.0.0; depends D > 1.0.0
+    - C 1.0.0; depends D < 3.0.0
+    - D 1.0.0
+    - D 2.0.0
+    - D 3.0.0
+  request:
+    - install: ["A"]
+  transaction:
+    - install:
+      - A 1.0.0
+      - B 1.0.0
+      - C 1.0.0
+      - D 2.0.0
