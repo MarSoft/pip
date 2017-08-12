@@ -95,14 +95,14 @@ class Resolver(object):
         # req.populate_link() needs to be called before we can make decisions
         # based on link type.
         discovered_reqs = []
-        for req in chain(root_reqs, discovered_reqs):
+        for ireq in chain(root_reqs, discovered_reqs):
             try:
-                discovered_reqs.extend(
-                    self._resolve_one(requirement_set, req)
-                )
+                val = self._resolve_one(requirement_set, ireq)
             except HashError as exc:
-                exc.req = req
+                exc.req = ireq
                 hash_errors.append(exc)
+            else:
+                discovered_reqs.extend(val)
 
         if hash_errors:
             raise hash_errors
