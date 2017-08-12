@@ -235,9 +235,7 @@ class Resolver(object):
 
         :return: A list of additional InstallRequirements to also install.
         """
-        # Tell user what we are doing for this requirement:
-        # obtain (editable), skipping, processing (local url), collecting
-        # (remote url or package name)
+        # if it's prepared or is a constraint, we ignore it.
         if req_to_install.constraint or req_to_install.prepared:
             return []
 
