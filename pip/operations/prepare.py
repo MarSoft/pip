@@ -14,7 +14,7 @@ from pip.exceptions import (
     DirectoryUrlHashUnsupported, HashUnpinned, InstallationError,
     PreviousBuildDirError, VcsHashUnsupported
 )
-from pip.utils import display_path, normalize_path
+from pip.utils import display_path, ensure_dir, normalize_path
 from pip.utils.hashes import MissingHashes
 from pip.utils.logging import indent_log
 from pip.vcs import vcs
@@ -158,6 +158,11 @@ class RequirementPreparer(object):
                     "Could not find or access download directory '%s'"
                     % display_path(self.download_dir))
         return False
+
+    def prepare_for_resolution(self):
+        # make the wheelhouse
+        if self.wheel_download_dir:
+            ensure_dir(self.wheel_download_dir)
 
     def prepare_linked_requirement(self, req, session, finder,
                                    upgrade_allowed, require_hashes):

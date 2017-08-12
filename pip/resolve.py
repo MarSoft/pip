@@ -18,7 +18,7 @@ from pip.exceptions import (
     DistributionNotFound, HashError, HashErrors, UnsupportedPythonVersion
 )
 from pip.req.req_install import InstallRequirement
-from pip.utils import dist_in_usersite, ensure_dir
+from pip.utils import dist_in_usersite
 from pip.utils.logging import indent_log
 from pip.utils.packaging import check_dist_requires_python
 
@@ -67,9 +67,7 @@ class Resolver(object):
         possible to move the preparation to become a step separated from
         dependency resolution.
         """
-        # make the wheelhouse
-        if self.preparer.wheel_download_dir:
-            ensure_dir(self.preparer.wheel_download_dir)
+        self.preparer.prepare_for_resolution()
 
         # If any top-level requirement has a hash specified, enter
         # hash-checking mode, which requires hashes from all.
