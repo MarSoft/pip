@@ -176,6 +176,9 @@ class Resolver(object):
         return None
 
     def _get_abstract_dist_for(self, req):
+        """Takes a InstallRequirement and returns a single AbstractDist \
+        representing a prepared variant of the same.
+        """
         assert self.require_hashes is not None, (
             "require_hashes should have been set in Resolver.resolve()"
         )
@@ -188,8 +191,7 @@ class Resolver(object):
         # satisfied_by is only evaluated by calling _check_skip_installed,
         # so it must be None here.
         assert req.satisfied_by is None
-        if not self.ignore_installed:
-            skip_reason = self._check_skip_installed(req)
+        skip_reason = self._check_skip_installed(req)
 
         if req.satisfied_by:
             return self.preparer.prepare_installed_requirement(
@@ -207,8 +209,9 @@ class Resolver(object):
         # going to be re-installed/upgraded or not and reporting to the user.
         # This should probably get cleaned up in a future refactor.
 
-        # req.req is only available after unpack for URL pkgs repeat
-        # check_if_exists to uninstall-on-upgrade (#14)
+        # req.req is only avail after unpack for URL
+        # pkgs repeat check_if_exists to uninstall-on-upgrade
+        # (#14)
         if not self.ignore_installed:
             req.check_if_exists()
 
