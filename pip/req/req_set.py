@@ -12,9 +12,8 @@ logger = logging.getLogger(__name__)
 
 class RequirementSet(object):
 
-    def __init__(self,
-                 require_hashes=False, target_dir=None, use_user_site=False,
-                 pycompile=True):
+    def __init__(self, require_hashes=False, target_dir=None,
+                 use_user_site=False, pycompile=True):
         """Create a RequirementSet.
 
         :param wheel_cache: The pip wheel cache, for passing to
