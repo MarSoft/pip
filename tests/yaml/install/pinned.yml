@@ -27,3 +27,10 @@ cases:
     - install:
       - A 1.0.0
       - B 1.0.0
+-
+  request:
+    - install: [A, B == 1.0.0]
+  transaction:
+    - install:
+      - A 1.0.0
+      - B 1.0.0
