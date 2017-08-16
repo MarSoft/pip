@@ -8,6 +8,7 @@ base:
     - B 3.0.0
 
 cases:
+# Some basic sanity checks
 -
   request:
     - install: A >= 2.0.0
