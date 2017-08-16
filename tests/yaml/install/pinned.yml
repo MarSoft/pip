@@ -1,15 +1,15 @@
 base:
   available:
-    - A 1.0.0
-    - A 2.0.0
-    - B 1.0.0; depends A == 1.0.0
-    - B 2.0.0; depends A == 2.0.0
+    - A 1.0.0; depends B == 1.0.0
+    - A 2.0.0; depends B == 2.0.0
+    - B 1.0.0
+    - B 2.0.0
 
 cases:
 # Should choose the latest versions when not pinned.
 -
   request:
-    - install: B
+    - install: A
   transaction:
     - install:
       - A 2.0.0
@@ -17,14 +17,14 @@ cases:
 # Should choose the correct versions when pinned.
 -
   request:
-    - install: B == 2.0.0
+    - install: A == 2.0.0
   transaction:
     - install:
       - A 2.0.0
       - B 2.0.0
 -
   request:
-    - install: B == 1.0.0
+    - install: A == 1.0.0
   transaction:
     - install:
       - A 1.0.0
@@ -35,7 +35,7 @@ cases:
 # satisfying set of packages.
 -
   request:
-    - install: [A, B == 1.0.0]
+    - install: [B, A == 1.0.0]
   transaction:
     - install:
       - A 1.0.0
