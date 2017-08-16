@@ -12,6 +12,7 @@ base:
     - E 1.0.0
     - F 1.0.0
 cases:
+# Ensure extras are installed when specifed as a dependency.
 -
   request:
     - install: B
@@ -28,6 +29,7 @@ cases:
       - C 1.0.0
       - D 1.0.0
       - F 1.0.0
+# Ensure extras are combined and installed when specifed as a dependency.
 -
   request:
     - install: A
@@ -39,6 +41,9 @@ cases:
       - D 1.0.0
       - E 1.0.0
       - F 1.0.0
+# Installing over an existing installation with more extras should work.
+# Further, specifying the same package with different extras in one go,
+# should result in them being merged.
 -
   request:
     - install: D

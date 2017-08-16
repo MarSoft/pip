@@ -6,6 +6,7 @@ base:
     - B 2.0.0; depends A == 2.0.0
 
 cases:
+# Should choose the latest versions when not pinned.
 -
   request:
     - install: B
@@ -13,6 +14,7 @@ cases:
     - install:
       - A 2.0.0
       - B 2.0.0
+# Should choose the correct versions when pinned.
 -
   request:
     - install: B == 2.0.0
@@ -27,6 +29,10 @@ cases:
     - install:
       - A 1.0.0
       - B 1.0.0
+# The resolver would choose B 2.0.0 first and this top-level selection would
+# be invalidated by the next B 1.0.0 selection -- from A 1.0.0; which should
+# result in backtracking and selection of B 1.0.0 which would result in a
+# satisfying set of packages.
 -
   request:
     - install: [A, B == 1.0.0]
