@@ -6,6 +6,12 @@ base:
     - B 2.0.0
 
 cases:
+# Sanity Check
+-
+  request:
+    - install: B
+  transaction:
+    - install: [B 2.0.0]
 # Should choose the latest versions when not pinned.
 -
   request:

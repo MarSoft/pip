@@ -12,6 +12,21 @@ base:
     - E 1.0.0
     - F 1.0.0
 cases:
+# Ensure extras get installed specified as top level requirements
+-
+  request:
+    - install: D[extra_1]
+  transaction:
+    - install:
+      - D 1.0.0
+      - E 1.0.0
+-
+  request:
+    - install: D[extra_2]
+  transaction:
+    - install:
+      - D 1.0.0
+      - F 1.0.0
 # Ensure extras are installed when specifed as a dependency.
 -
   request:
