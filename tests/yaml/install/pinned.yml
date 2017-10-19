@@ -1,47 +1,34 @@
 base:
   available:
-    - A 1.0.0; depends B == 1.0.0
-    - A 2.0.0; depends B == 2.0.0
-    - B 1.0.0
-    - B 2.0.0
+    - A 1.0.0
+    - A 2.0.0
+    - B 1.0.0; depends A == 1.0.0
+    - B 2.0.0; depends A == 2.0.0
 
 cases:
-# Sanity Check
--
-  request:
-    - install: B
-  transaction:
-    - install: [B 2.0.0]
-# Should choose the latest versions when not pinned.
 -
   request:
     - install: A
   transaction:
     - install:
       - A 2.0.0
-      - B 2.0.0
-# Should choose the correct versions when pinned.
 -
   request:
-    - install: A == 2.0.0
+    - install: B
   transaction:
     - install:
       - A 2.0.0
       - B 2.0.0
 -
   request:
-    - install: A == 1.0.0
+    - install: B == 2.0.0
   transaction:
     - install:
-      - A 1.0.0
-      - B 1.0.0
-# The resolver would choose B 2.0.0 first and this top-level selection would
-# be invalidated by the next B 1.0.0 selection -- from A 1.0.0; which should
-# result in backtracking and selection of B 1.0.0 which would result in a
-# satisfying set of packages.
+      - A 2.0.0
+      - B 2.0.0
 -
   request:
-    - install: [B, A == 1.0.0]
+    - install: B == 1.0.0
   transaction:
     - install:
       - A 1.0.0
