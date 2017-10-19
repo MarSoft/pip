@@ -3,6 +3,7 @@ sudo: false
 dist: trusty
 
 matrix:
+  fast_finish: true
   include:
     - env: TOXENV=docs
     - env: TOXENV=lint-py2
@@ -19,11 +20,6 @@ matrix:
       python: 2.7
     - env: TOXENV=py36
       python: 3.6
-    # Unvendored
-    - env: "TOXENV=py27 VENDOR=no WHEELS=yes"
-      python: 2.7
-    - env: "TOXENV=py36 VENDOR=no WHEELS=yes"
-      python: 3.6
     # All the other Py3 versions
     - env: TOXENV=py33
       python: 3.3
@@ -36,7 +32,6 @@ matrix:
       python: nightly
   allow_failures:
     - python: nightly
-    - python: pypy3
 
 install: travis_retry .travis/install.sh
 script: .travis/run.sh
