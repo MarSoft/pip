@@ -6,6 +6,16 @@ import sys
 from setuptools import setup, find_packages
 
 
+here = os.path.abspath(os.path.dirname(__file__))
+
+
+def read(*parts):
+    # intentionally *not* adding an encoding option to open, See:
+    #   https://github.com/pypa/virtualenv/issues/201#issuecomment-3145690
+    with codecs.open(os.path.join(here, *parts), 'r') as fp:
+        return fp.read()
+
+
 long_description = read('README.rst')
 
 tests_require = [
