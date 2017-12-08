@@ -11,7 +11,7 @@ Policy
   ``pip/_vendor/vendor.txt``.
 
 * Vendored libraries **MUST** function without any build steps such as ``2to3`` or
-  compilation of C code, pratically this limits to single source 2.x/3.x and
+  compilation of C code, practically this limits to single source 2.x/3.x and
   pure Python.
 
 * Any modifications made to libraries **MUST** be noted in
@@ -22,7 +22,7 @@ Policy
 Rationale
 ---------
 
-Historically pip has not had any dependencies except for setuptools itself,
+Historically, pip has not had any dependencies except for setuptools itself,
 choosing instead to implement any functionality it needed to prevent needing
 a dependency. However, starting with pip 1.5 we began to replace code that was
 implemented inside of pip with reusable libraries from PyPI. This brought the
@@ -43,12 +43,12 @@ way (via ``install_requires``) for pip. These issues are:
 
 * **Making other libraries uninstallable.** One of pip's current dependencies is
   the ``requests`` library, for which pip requires a fairly recent version to run.
-  If pip dependended on ``requests`` in the traditional manner, then we'd either 
+  If pip depended on ``requests`` in the traditional manner, then we'd either 
   have to maintain compatibility with every ``requests`` version that has ever 
-  existed (and ever will), OR allow pip to render certain versions of ``requests``
+  existed (and ever will) OR allow pip to render certain versions of ``requests``
   uninstallable. (The second issue, although technically true for any Python 
   application, is magnified by pip's ubiquity; pip is installed by default in 
-  Python, in ``pyvenv``, and in ``virtualenv``.)
+  Python, in ``pyvenv`` and in ``virtualenv``.)
 
 * **Security.** This might seem puzzling at first glance, since vendoring 
   has a tendency to complicate updating dependencies for security updates,
@@ -57,7 +57,7 @@ way (via ``install_requires``) for pip. These issues are:
   This is what pip did historically. It forced pip to re-implement its own 
   HTTPS verification routines as a workaround for the Python standard library's 
   lack of SSL validation, which resulted in similar bugs in the validation routine 
-  in ``requests`` and ``urllib3``, except that they had to be discovered and
+  in ``requests`` and ``urllib3``; except that they had to be discovered and
   fixed independently. Even though we're vendoring, reusing libraries keeps pip 
   more secure by relying on the great work of our dependencies, *and* allowing for
   faster, easier security fixes by simply pulling in newer versions of dependencies.
@@ -117,7 +117,7 @@ Debundling
 As mentioned in the rationale, we, the pip team, would prefer it if pip was not
 debundled (other than optionally ``pip/_vendor/requests/cacert.pem``) and that
 pip was left intact. However, if you insist on doing so, we have a
-semi-supported method that we do test in our CI, but requires a bit of
+semi-supported method that we do not test in our CI and requires a bit of
 extra work on your end in order to solve the problems described above.
 
 1. Delete everything in ``pip/_vendor/`` **except** for
