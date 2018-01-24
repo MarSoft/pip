@@ -710,10 +710,14 @@ class WheelBuilder(object):
         """
         build_reqs, isolate = self._find_build_reqs(req)
         if 'setuptools' not in build_reqs:
+            # We log on 2 lines for nicer reading lengths for the end-user.
             logger.warning(
-                "This version of pip does not implement PEP 517, so "
-                "it cannot build a wheel without setuptools. You need to "
-                "upgrade to a newer version of pip that implements PEP 517."
+                "%s does not include 'setuptools' as a buildtime requirement "
+                "in its pyproject.toml.", req.name,
+            )
+            logger.warning(
+                "This version of pip does not implement PEP 517 so it cannot "
+                "build a wheel without setuptools."
             )
         # Install build deps into temporary directory (PEP 518)
         with BuildEnvironment(self.no_clean) as prefix:
